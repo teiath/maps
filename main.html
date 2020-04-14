@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Χάρτης Μονάδων ΠΣΔ</title>
+
+    <link rel="stylesheet" href="assets/libs/bootstrap/bootstrap.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/libs/select2/select2.css">
+    <link rel="stylesheet" href="assets/libs/leaflet/leaflet.css">
+    <link rel="stylesheet" href="assets/libs/leaflet-markercluster/MarkerCluster.css">
+    <link rel="stylesheet" href="assets/libs/leaflet-markercluster/MarkerCluster.Default.css">
+    <link rel="stylesheet" href="assets/libs/spin/spin.css">
+    <link rel="stylesheet" href="assets/css/app.css">
+    <script src="assets/libs/spin/spin.js"></script>
+    <link rel="apple-touch-icon" sizes="76x76" href="assets/img/favicon-76.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="assets/img/favicon-120.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="assets/img/favicon-152.png">
+    <link rel="icon" sizes="196x196" href="assets/img/favicon-196.png">
+    <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
+  </head>
+
+  <body>
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a href="https://maps.sch.gr/main.html">
+              <img src="assets/img/Map-Banner-main.jpg" alt="Χάρτης Μονάδων ΠΣΔ">
+          </a>
+          <div class="navbar-icon-container">
+            <a href="#" class="navbar-icon pull-right visible-xs" id="nav-btn"><i class="fa fa-bars fa-lg white"></i></a>
+            <a href="#" class="navbar-icon pull-right visible-xs" id="sidebar-toggle-btn"><i class="fa fa-search fa-lg white"></i></a>
+          </div>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="hidden-xs"><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="list-btn"><i class="fa fa-list white"></i>&nbsp;&nbsp;Αναζήτηση</a></li>
+            <li class="dropdown">
+                <a class="dropdown-toggle" id="downloadDrop" href="#" role="button" data-toggle="dropdown"><i class="fa fa-cloud-download white"></i>&nbsp;&nbsp;Αρχεία <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="documents/user_guide_maps.pdf" download="documents/user_guide_maps.pdf" target="_blank" data-toggle="collapse" data-target=".navbar-collapse.in"><i class="fa fa-download"></i>&nbsp;&nbsp;Εγχειρίδιο Χρήστη Xάρτη Μονάδων ΠΣΔ</a></li>
+                  <li><a href="documents/term_of_use_maps.pdf" download="documents/term_of_use_maps.pdf" target="_blank" data-toggle="collapse" data-target=".navbar-collapse.in"><i class="fa fa-download"></i>&nbsp;&nbsp;Όροι Xρήσης Υπηρεσίας</a></li>
+                </ul>
+            </li>
+            <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="about-btn"><i class="fa fa-question-circle white"></i>&nbsp;&nbsp;Πληροφορίες</a></li>
+			<li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="legend-btn"><i class="fa fa-envelope white"></i>&nbsp;&nbsp;Επικοινωνία</a></li>
+          </ul>
+        </div><!--/.navbar-collapse -->
+      </div>
+    </div>
+
+    <div id="container">
+      <div id="sidebar">
+        <div class="sidebar-wrapper">
+          <div class="panel panel-default" id="features">
+            <div class="panel-heading">
+              <h3 class="panel-title">Φίλτρα Αναζήτησης
+              <button type="button" class="btn btn-xs btn-default pull-right" id="sidebar-hide-btn"><i class="fa fa-chevron-left"></i></button></h3>
+            </div>
+            <div class="panel-body">
+              <div class="row">
+                <div class="col-xs-12 col-md-12">
+                  <label for="search_name">
+                    Όνομα Μονάδας
+                  <input type="text" id="search_name" class="form-control search search_name" placeholder="" />
+                  </label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xs-12 col-md-12">
+                  <label for="search_mm_id">
+                    Κωδικός ΜΜ
+                  <input type="text" id="search_mm_id" class="form-control search search_mm_id" placeholder="" />
+                  </label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xs-12 col-md-12">
+                  <label for="search_registry_no">
+                    Κωδικός Υπουργείου
+                    <input type="text" id="search_registry_no" class="form-control search search_registry_no" placeholder="" />
+                  </label>
+                </div>
+              </div>
+                <div class="row">
+                <div class="col-xs-12 col-md-12">
+                  <label for="municipality">
+                    Δήμος
+                  <select id="municipality" class="js-example-basic-multiple js-states form-control" name="municipalities[]" multiple="multiple">
+                    <option value="1">ΙΕΡΑΣ ΠΟΛΗΣ ΜΕΣΟΛΟΓΓΙΟΥ</option>
+                    <option value="2">ΑΓΡΙΝΙΟΥ</option>
+                    <option value="3">ΝΑΥΠΛΙΕΩΝ</option>
+                    <option value="4">ΑΡΓΟΥΣ-ΜΥΚΗΝΩΝ</option>
+                    <option value="5">ΑΘΗΝΑΙΩΝ</option>
+                    <option value="6">ΠΕΡΙΣΤΕΡΙΟΥ</option>
+                    <option value="7">ΑΓΙΑΣ ΒΑΡΒΑΡΑΣ</option>
+                    <option value="8">ΑΓΙΟΥ ΔΗΜΗΤΡΙΟΥ</option>
+                    <option value="9">ΑΙΓΑΛΕΩ</option>
+                    <option value="10">ΒΥΡΩΝΟΣ</option>
+                    <option value="11">ΖΩΓΡΑΦΟΥ</option>
+                    <option value="12">ΗΛΙΟΥΠΟΛΕΩΣ</option>
+                    <option value="13">ΦΙΛΑΔΕΛΦΕΙΑΣ - ΧΑΛΚΗΔΟΝΟΣ</option>
+                    <option value="14">ΗΡΑΚΛΕΙΟΥ</option>
+                    <option value="15">ΚΗΦΙΣΙΑΣ</option>
+                    <option value="16">ΑΧΑΡΝΩΝ</option>
+                    <option value="17">ΠΑΠΑΓΟΥ - ΧΟΛΑΡΓΟΥ</option>
+                    <option value="18">ΚΑΛΛΙΘΕΑΣ</option>
+                    <option value="19">ΠΕΙΡΑΙΩΣ</option>
+                    <option value="20">ΠΟΡΟΥ</option>
+                    <option value="21">ΙΛΙΟΥ (ΝΕΩΝ ΛΙΟΣΙΩΝ)</option>
+                    <option value="22">ΝΙΚΑΙΑΣ - ΑΓΙΟΥ Ι. ΡΕΝΤΗ</option>
+                    <option value="23">ΚΟΡΥΔΑΛΛΟΥ</option>
+                    <option value="24">ΔΙΟΝΥΣΟΥ</option>
+                    <option value="25">ΛΑΥΡΕΩΤΙΚΗΣ</option>
+                    <option value="26">ΠΑΛΛΗΝΗΣ</option>
+                    <option value="27">ΚΡΩΠΙΑΣ</option>
+                    <option value="28">ΕΛΛΗΝΙΚΟΥ - ΑΡΓΥΡΟΥΠΟΛΗΣ</option>
+                    <option value="29">ΧΑΪΔΑΡΙΟΥ</option>
+                    <option value="30">ΓΑΛΑΤΣΙΟΥ</option>
+                    <option value="31">ΚΑΙΣΑΡΙΑΝΗΣ</option>
+                    <option value="32">ΑΜΑΡΟΥΣΙΟΥ</option>
+                    <option value="33">ΧΑΛΑΝΔΡΙΟΥ</option>
+                    <option value="34">ΝΕΑΣ ΣΜΥΡΝΗΣ</option>
+                    <option value="35">ΡΑΦΗΝΑΣ - ΠΙΚΕΡΜΙΟΥ</option>
+                    <option value="36">ΑΓΙΑΣ ΠΑΡΑΣΚΕΥΗΣ</option>
+                    <option value="37">ΦΙΛΟΘΕΗΣ - ΨΥΧΙΚΟΥ</option>
+                    <option value="38">ΒΑΡΗΣ - ΒΟΥΛΑΣ - ΒΟΥΛΙΑΓΜΕΝΗΣ</option>
+                    <option value="39">ΠΑΤΡΕΩΝ</option>
+                    <option value="40">ΡΟΔΟΥ</option>
+                    <option value="41">ΧΑΛΚΙΔΕΩΝ</option>
+                    <option value="42">ΚΥΜΗΣ-ΑΛΙΒΕΡΙΟΥ</option>
+                    <option value="43">ΚΟΡΙΝΘΙΩΝ</option>
+                    <option value="44">ΚΑΡΔΙΤΣΑΣ</option>
+                    <option value="45">ΑΜΟΡΓΟΥ</option>
+                    <option value="46">ΣΥΡΟΥ-ΕΡΜΟΥΠΟΛΗΣ</option>
+                    <option value="47">ΝΑΞΟΥ & ΜΙΚΡΩΝ ΚΥΚΛΑΔΩΝ</option>
+                    <option value="48">ΜΥΚΟΝΟΥ</option>
+                    <option value="49">ΛΑΡΙΣΑΙΩΝ</option>
+                    <option value="50">ΑΓΙΑΣ</option>
+                    <option value="51">ΛΕΣΒΟΥ</option>
+                    <option value="52">ΒΟΛΟΥ</option>
+                    <option value="53">ΚΑΤΕΡΙΝΗΣ</option>
+                    <option value="54">ΧΑΛΚΗΔΟΝΟΣ</option>
+                    <option value="55">ΣΑΜΟΥ</option>
+                    <option value="56">ΙΚΑΡΙΑΣ</option>
+                    <option value="57">ΣΕΡΡΩΝ</option>
+                    <option value="58">ΧΑΝΙΩΝ</option>
+                    <option value="59">ΧΙΟΥ</option>
+                    <option value="60">ΦΛΩΡΙΝΑΣ</option>
+                    <option value="61">ΚΙΛΚΙΣ</option>
+                    <option value="62">ΤΡΙΠΟΛΗΣ</option>
+                    <option value="63">ΑΡΤΑΙΩΝ</option>
+                    <option value="64">ΒΡΙΛΗΣΣΙΩΝ</option>
+                    <option value="65">ΛΥΚΟΒΡΥΣΗΣ - ΠΕΥΚΗΣ</option>
+                    <option value="66">ΜΕΤΑΜΟΡΦΩΣΕΩΣ</option>
+                    <option value="67">ΜΟΣΧΑΤΟΥ - ΤΑΥΡΟΥ</option>
+                    <option value="68">ΓΛΥΦΑΔΑΣ</option>
+                    <option value="69">ΠΑΛΑΙΟΥ ΦΑΛΗΡΟΥ</option>
+                    <option value="70">ΑΛΙΜΟΥ</option>
+                    <option value="71">ΑΙΓΙΑΛΕΙΑΣ</option>
+                    <option value="72">ΓΡΕΒΕΝΩΝ</option>
+                    <option value="73">ΔΡΑΜΑΣ</option>
+                    <option value="74">ΑΓΑΘΟΝΗΣΙΟΥ</option>
+                    <option value="75">ΙΣΤΙΑΙΑΣ-ΑΙΔΗΨΟΥ</option>
+                    <option value="76">ΒΕΡΟΙΑΣ</option>
+                    <option value="77">ΑΛΕΞΑΝΔΡΕΙΑΣ</option>
+                    <option value="78">ΓΟΡΤΥΝΑΣ</option>
+                    <option value="79">ΧΕΡΣΟΝΗΣΟΥ</option>
+                    <option value="80">ΗΓΟΥΜΕΝΙΤΣΗΣ</option>
+                    <option value="81">ΙΩΑΝΝΙΤΩΝ</option>
+                    <option value="82">ΒΟΡΕΙΩΝ ΤΖΟΥΜΕΡΚΩΝ</option>
+                    <option value="83">ΚΑΒΑΛΑΣ</option>
+                    <option value="84">ΚΕΡΚΥΡΑΣ</option>
+                    <option value="85">ΚΕΦΑΛΟΝΙΑΣ</option>
+                    <option value="86">ΚΟΖΑΝΗΣ</option>
+                    <option value="87">ΕΟΡΔΑΙΑΣ</option>
+                    <option value="88">ΛΟΥΤΡΑΚΙΟΥ-ΑΓ.ΘΕΟΔΩΡΩΝ</option>
+                    <option value="89">ΞΥΛΟΚΑΣΤΡΟΥ-ΕΥΡΩΣΤΙΝΗΣ</option>
+                    <option value="90">ΣΠΑΡΤΗΣ</option>
+                    <option value="91">ΤΡΙΦΥΛΙΑΣ</option>
+                    <option value="92">ΚΑΛΑΜΑΤΑΣ</option>
+                    <option value="93">ΞΑΝΘΗΣ</option>
+                    <option value="94">ΕΔΕΣΣΑΣ</option>
+                    <option value="95">ΤΡΙΚΚΑΙΩΝ</option>
+                    <option value="96">ΚΑΛΑΜΠΑΚΑΣ</option>
+                    <option value="97">ΛΑΜΙΕΩΝ</option>
+                    <option value="98">ΩΡΩΠΟΥ</option>
+                    <option value="99">ΠΑΙΑΝΙΑΣ</option>
+                    <option value="100">ΕΛΕΥΣΙΝΑΣ</option>
+                    <option value="101">ΑΣΠΡΟΠΥΡΓΟΥ</option>
+                    <option value="102">ΜΕΓΑΡΕΩΝ</option>
+                    <option value="103">ΚΕΡΑΤΣΙΝΙΟΥ - ΔΡΑΠΕΤΣΩΝΑΣ</option>
+                    <option value="104">ΣΑΛΑΜΙΝΟΣ</option>
+                    <option value="105">ΠΕΡΑΜΑΤΟΣ</option>
+                    <option value="106">ΘΕΡΜΟΥ</option>
+                    <option value="107">ΑΚΤΙΟΥ-ΒΟΝΙΤΣΑΣ</option>
+                    <option value="108">ΑΜΦΙΛΟΧΙΑΣ</option>
+                    <option value="109">ΞΗΡΟΜΕΡΟΥ</option>
+                    <option value="110">ΝΑΥΠΑΚΤΙΑΣ</option>
+                    <option value="111">ΕΡΜΙΟΝΙΔΑΣ</option>
+                    <option value="112">ΕΠΙΔΑΥΡΟΥ</option>
+                    <option value="113">ΚΕΝΤΡΙΚΩΝ ΤΖΟΥΜΕΡΚΩΝ</option>
+                    <option value="114">ΓΕΩΡΓΙΟΥ ΚΑΡΑΪΣΚΑΚΗ</option>
+                    <option value="115">ΝΙΚΟΛΑΟΥ ΣΚΟΥΦΑ</option>
+                    <option value="116">ΝΕΑΣ ΙΩΝΙΑΣ</option>
+                    <option value="117">ΑΓΙΩΝ ΑΝΑΡΓΥΡΩΝ - ΚΑΜΑΤΕΡΟΥ</option>
+                    <option value="118">ΦΥΛΗΣ</option>
+                    <option value="119">ΚΑΛΑΒΡΥΤΩΝ</option>
+                    <option value="120">ΔΥΤΙΚΗΣ ΑΧΑΙΑΣ</option>
+                    <option value="121">ΕΡΥΜΑΝΘΟΥ</option>
+                    <option value="122">ΟΡΧΟΜΕΝΟΥ</option>
+                    <option value="123">ΤΑΝΑΓΡΑΣ</option>
+                    <option value="124">ΘΗΒΑΙΩΝ</option>
+                    <option value="125">ΔΙΣΤΟΜΟΥ - ΑΡΑΧΟΒΑΣ - ΑΝΤΙΚΥΡΑΣ</option>
+                    <option value="126">ΛΕΒΑΔΕΩΝ</option>
+                    <option value="127">ΑΛΙΑΡΤΟΥ</option>
+                    <option value="128">ΔΕΣΚΑΤΗΣ</option>
+                    <option value="129">ΔΟΞΑΤΟΥ</option>
+                    <option value="130">ΠΑΡΑΝΕΣΤΙΟΥ</option>
+                    <option value="131">ΠΡΟΣΟΤΣΑΝΗΣ</option>
+                    <option value="132">ΚΑΤΩ ΝΕΥΡΟΚΟΠΙΟΥ</option>
+                    <option value="133">ΚΑΣΟΥ</option>
+                    <option value="134">ΚΑΡΠΑΘΟΥ</option>
+                    <option value="135">ΚΑΛΥΜΝΙΩΝ</option>
+                    <option value="136">ΛΕΡΟΥ</option>
+                    <option value="137">ΑΝΔΡΑΒΙΔΑΣ-ΚΥΛΛΗΝΗΣ</option>
+                    <option value="138">ΣΟΥΛΙΟΥ</option>
+                    <option value="139">ΑΛΕΞΑΝΔΡΟΥΠΟΛΗΣ</option>
+                    <option value="140">ΣΑΜΟΘΡΑΚΗΣ</option>
+                    <option value="141">ΣΟΥΦΛΙΟΥ</option>
+                    <option value="142">ΔΙΔΥΜΟΤΕΙΧΟΥ</option>
+                    <option value="143">ΟΡΕΣΤΙΑΔΟΣ</option>
+                    <option value="144">ΜΑΝΤΟΥΔΙΟΥ-ΛΙΜΝΗΣ-ΑΓΙΑΣ ΑΝΝΑΣ</option>
+                    <option value="145">ΚΑΡΥΣΤΟΥ</option>
+                    <option value="146">ΣΚΥΡΟΥ</option>
+                    <option value="147">ΕΡΕΤΡΙΑΣ</option>
+                    <option value="148">ΔΙΡΦΥΩΝ-ΜΕΣΣΑΠΙΩΝ</option>
+                    <option value="149">ΚΑΡΠΕΝΗΣΙΟΥ</option>
+                    <option value="150">ΑΓΡΑΦΩΝ</option>
+                    <option value="151">ΖΑΚΥΝΘΟΥ</option>
+                    <option value="152">ΑΡΧΑΙΑΣ ΟΛΥΜΠΙΑΣ</option>
+                    <option value="153">ΗΛΙΔΑΣ</option>
+                    <option value="154">ΑΝΔΡΙΤΣΑΙΝΑΣ-ΚΡΕΣΤΕΝΩΝ</option>
+                    <option value="155">ΠΥΡΓΟΥ</option>
+                    <option value="156">ΖΑΧΑΡΩΣ</option>
+                    <option value="157">ΝΑΟΥΣΑΣ</option>
+                    <option value="158">ΑΡΧΑΝΩΝ - ΑΣΤΕΡΟΥΣΙΩΝ</option>
+                    <option value="159">ΜΙΝΩΑ ΠΕΔΙΑΔΑΣ</option>
+                    <option value="160">ΦΑΙΣΤΟΥ</option>
+                    <option value="161">ΒΙΑΝΝΟΥ</option>
+                    <option value="162">ΦΙΛΙΑΤΩΝ</option>
+                    <option value="163">ΖΑΓΟΡΙΟΥ</option>
+                    <option value="164">ΖΙΤΣΑΣ</option>
+                    <option value="165">ΔΩΔΩΝΗΣ</option>
+                    <option value="166">ΚΟΝΙΤΣΑΣ</option>
+                    <option value="167">ΠΩΓΩΝΙΟΥ</option>
+                    <option value="168">ΣΟΦΑΔΩΝ</option>
+                    <option value="169">ΛΙΜΝΗΣ ΠΛΑΣΤΗΡΑ</option>
+                    <option value="170">ΠΑΛΑΜΑ</option>
+                    <option value="171">ΜΟΥΖΑΚΙΟΥ</option>
+                    <option value="172">ΑΡΓΙΘΕΑΣ</option>
+                    <option value="173">ΚΑΣΤΟΡΙΑΣ</option>
+                    <option value="174">ΟΡΕΣΤΙΔΟΣ</option>
+                    <option value="175">ΝΕΣΤΟΡΙΟΥ</option>
+                    <option value="176">ΠΑΙΟΝΙΑΣ</option>
+                    <option value="177">ΒΟΪΟΥ</option>
+                    <option value="178">ΣΕΡΒΙΩΝ-ΒΕΛΒΕΝΤΟΥ</option>
+                    <option value="179">ΣΙΚΥΩΝΙΩΝ</option>
+                    <option value="180">ΒΕΛΟΥ-ΒΟΧΑΣ</option>
+                    <option value="181">ΝΕΜΕΑΣ</option>
+                    <option value="182">ΘΗΡΑΣ</option>
+                    <option value="183">ΑΝΔΡΟΥ</option>
+                    <option value="184">ΤΗΝΟΥ</option>
+                    <option value="185">ΜΗΛΟΥ</option>
+                    <option value="186">ΠΑΡΟΥ</option>
+                    <option value="187">ΙΗΤΩΝ</option>
+                    <option value="188">ΕΥΡΩΤΑ</option>
+                    <option value="189">ΑΝΑΤΟΛΙΚΗΣ ΜΑΝΗΣ</option>
+                    <option value="190">ΜΟΝΕΜΒΑΣΙΑΣ</option>
+                    <option value="191">ΚΙΛΕΛΕΡ</option>
+                    <option value="192">ΤΕΜΠΩΝ</option>
+                    <option value="193">ΙΕΡΑΠΕΤΡΑΣ</option>
+                    <option value="194">ΑΓΙΟΥ ΝΙΚΟΛΑΟΥ</option>
+                    <option value="195">ΣΗΤΕΙΑΣ</option>
+                    <option value="196">ΛΗΜΝΟΥ</option>
+                    <option value="197">ΛΕΥΚΑΔΑΣ</option>
+                    <option value="198">ΡΗΓΑ ΦΕΡΡΑΙΟΥ</option>
+                    <option value="199">ΖΑΓΟΡΑΣ-ΜΟΥΡΕΣΙΟΥ</option>
+                    <option value="200">ΔΥΤΙΚΗΣ ΜΑΝΗΣ</option>
+                    <option value="201">ΜΕΣΣΗΝΗΣ</option>
+                    <option value="202">ΠΥΛΟΥ-ΝΕΣΤΟΡΟΣ</option>
+                    <option value="203">ΟΙΧΑΛΙΑΣ</option>
+                    <option value="204">ΑΒΔΗΡΩΝ</option>
+                    <option value="205">ΤΟΠΕΙΡΟΥ</option>
+                    <option value="206">ΑΛΜΩΠΙΑΣ</option>
+                    <option value="207">ΠΕΛΛΑΣ</option>
+                    <option value="208">ΣΚΥΔΡΑΣ</option>
+                    <option value="209">ΠΥΔΝΑΣ-ΚΟΛΙΝΔΡΟΥ</option>
+                    <option value="210">ΖΗΡΟΥ</option>
+                    <option value="211">ΠΡΕΒΕΖΗΣ</option>
+                    <option value="212">ΠΑΡΓΑΣ</option>
+                    <option value="213">ΑΝΩΓΕΙΩΝ</option>
+                    <option value="214">ΑΓΙΟΥ ΒΑΣΙΛΕΙΟΥ</option>
+                    <option value="215">ΑΜΑΡΙΟΥ</option>
+                    <option value="216">ΡΕΘΥΜΝΗΣ</option>
+                    <option value="217">ΚΟΜΟΤΗΝΗΣ</option>
+                    <option value="218">ΙΑΣΜΟΥ</option>
+                    <option value="219">ΜΑΡΩΝΕΙΑΣ-ΣΑΠΩΝ</option>
+                    <option value="220">ΣΙΝΤΙΚΗΣ</option>
+                    <option value="221">ΒΙΣΑΛΤΙΑΣ</option>
+                    <option value="222">ΗΡΑΚΛΕΙΑΣ</option>
+                    <option value="223">ΕΜΜΑΝΟΥΗΛ ΠΑΠΠΑ</option>
+                    <option value="224">ΑΜΦΙΠΟΛΗΣ</option>
+                    <option value="225">ΝΕΑΣ ΖΙΧΝΗΣ</option>
+                    <option value="226">ΠΥΛΗΣ</option>
+                    <option value="227">ΦΑΡΚΑΔΟΝΑΣ</option>
+                    <option value="228">ΜΩΛΟΥ - ΑΓΙΟΥ ΚΩΝΣΤΑΝΤΙΝΟΥ</option>
+                    <option value="229">ΛΟΚΡΩΝ</option>
+                    <option value="230">ΑΜΦΙΚΛΕΙΑΣ - ΕΛΑΤΕΙΑΣ</option>
+                    <option value="231">ΔΟΜΟΚΟΥ</option>
+                    <option value="232">ΜΑΚΡΑΚΩΜΗΣ</option>
+                    <option value="233">ΣΤΥΛΙΔΟΣ</option>
+                    <option value="234">ΑΜΥΝΤΑΙΟΥ</option>
+                    <option value="235">ΠΡΕΣΠΩΝ</option>
+                    <option value="236">ΔΕΛΦΩΝ</option>
+                    <option value="237">ΔΩΡΙΔΟΣ</option>
+                    <option value="238">ΝΕΑΣ ΠΡΟΠΟΝΤΙΔΑΣ</option>
+                    <option value="239">ΚΑΣΣΑΝΔΡΑΣ</option>
+                    <option value="240">ΑΡΙΣΤΟΤΕΛΗ</option>
+                    <option value="241">ΠΟΛΥΓΥΡΟΥ</option>
+                    <option value="242">ΑΠΟΚΟΡΩΝΟΥ</option>
+                    <option value="243">ΠΛΑΤΑΝΙΑ</option>
+                    <option value="244">ΚΙΣΣΑΜΟΥ</option>
+                    <option value="245">ΣΦΑΚΙΩΝ</option>
+                    <option value="246">ΚΥΘΗΡΩΝ</option>
+                    <option value="247">ΑΙΓΙΝΑΣ</option>
+                    <option value="249">ΜΥΚΗΣ</option>
+                    <option value="250">ΙΘΑΚΗΣ</option>
+                    <option value="251">ΜΑΡΑΘΩΝΟΣ</option>
+                    <option value="252">ΜΥΛΟΠΟΤΑΜΟΥ</option>
+                    <option value="253">ΠΕΤΡΟΥΠΟΛΕΩΣ</option>
+                    <option value="254">ΔΑΦΝΗΣ - ΥΜΗΤΤΟΥ</option>
+                    <option value="255">ΚΩ</option>
+                    <option value="256">ΦΟΥΡΝΩΝ ΚΟΡΣΕΩΝ</option>
+                    <option value="257">ΑΡΡΙΑΝΩΝ</option>
+                    <option value="258">ΠΕΝΤΕΛΗΣ</option>
+                    <option value="259">ΣΠΑΤΩΝ - ΑΡΤΕΜΙΔΟΣ</option>
+                    <option value="260">ΣΑΡΩΝΙΚΟΥ</option>
+                    <option value="261">ΚΥΘΝΟΥ</option>
+                    <option value="262">ΑΛΜΥΡΟΥ</option>
+                    <option value="263">ΝΟΤΙΑΣ ΚΥΝΟΥΡΙΑΣ</option>
+                    <option value="264">ΓΟΡΤΥΝΙΑΣ</option>
+                    <option value="265">ΕΛΑΣΣΟΝΑΣ</option>
+                    <option value="266">ΜΕΤΣΟΒΟΥ</option>
+                    <option value="267">ΤΡΟΙΖΗΝΙΑΣ</option>
+                    <option value="268">ΚΟΡΔΕΛΙΟΥ-ΕΥΟΣΜΟΥ</option>
+                    <option value="269">ΔΕΛΤΑ</option>
+                    <option value="270">ΛΑΓΚΑΔΑ</option>
+                    <option value="271">ΘΕΣΣΑΛΟΝΙΚΗΣ</option>
+                    <option value="272">ΝΕΑΠΟΛΗΣ-ΣΥΚΕΩΝ</option>
+                    <option value="273">ΚΑΛΑΜΑΡΙΑΣ</option>
+                    <option value="274">ΠΑΥΛΟΥ ΜΕΛΑ</option>
+                    <option value="275">ΘΕΡΜΑΪΚΟΥ</option>
+                    <option value="276">ΠΥΛΑΙΑΣ-ΧΟΡΤΙΑΤΗ</option>
+                    <option value="277">ΘΕΡΜΗΣ</option>
+                    <option value="278">ΩΡΑΙΟΚΑΣΤΡΟΥ</option>
+                    <option value="279">ΒΟΛΒΗΣ</option>
+                    <option value="280">ΑΜΠΕΛΟΚΗΠΩΝ-ΜΕΝΕΜΕΝΗΣ</option>
+                    <option value="281">ΒΟΡΕΙΑΣ ΚΥΝΟΥΡΙΑΣ</option>
+                    <option value="282">ΜΕΓΑΛΟΠΟΛΗΣ</option>
+                    <option value="283">ΜΑΡΚΟΠΟΥΛΟΥ ΜΕΣΟΓΑΙΑΣ</option>
+                    <option value="284">ΜΑΝΔΡΑΣ - ΕΙΔΥΛΛΙΑΣ</option>
+                    <option value="285">ΜΕΓΙΣΤΗΣ</option>
+                    <option value="286">ΧΑΛΚΗΣ</option>
+                    <option value="287">ΛΕΙΨΩΝ</option>
+                    <option value="288">ΣΥΜΗΣ</option>
+                    <option value="289">ΑΣΤΥΠΑΛΑΙΑΣ</option>
+                    <option value="290">ΠΑΤΜΟΥ</option>
+                    <option value="291">ΠΗΝΕΙΟΥ</option>
+                    <option value="292">ΜΑΛΕΒΙΖΙΟΥ</option>
+                    <option value="293">ΝΕΣΤΟΥ</option>
+                    <option value="294">ΠΑΓΓΑΙΟΥ</option>
+                    <option value="295">ΑΝΑΦΗΣ</option>
+                    <option value="296">ΦΟΛΕΓΑΝΔΡΟΥ</option>
+                    <option value="297">ΚΙΜΩΛΟΥ</option>
+                    <option value="298">ΑΝΤΙΠΑΡΟΥ</option>
+                    <option value="299">ΣΙΦΝΟΥ</option>
+                    <option value="300">ΣΙΚΙΝΟΥ</option>
+                    <option value="301">ΚΕΑΣ</option>
+                    <option value="302">ΣΕΡΙΦΟΥ</option>
+                    <option value="303">ΦΑΡΣΑΛΩΝ</option>
+                    <option value="304">ΤΥΡΝΑΒΟΥ</option>
+                    <option value="305">ΟΡΟΠΕΔΙΟΥ ΛΑΣΙΘΙΟΥ</option>
+                    <option value="306">ΑΓΙΟΥ ΕΥΣΤΡΑΤΙΟΥ</option>
+                    <option value="307">ΜΕΓΑΝΗΣΙΟΥ</option>
+                    <option value="308">ΝΟΤΙΟΥ ΠΗΛΙΟΥ</option>
+                    <option value="309">ΣΚΟΠΕΛΟΥ</option>
+                    <option value="310">ΔΙΟΥ-ΟΛΥΜΠΟΥ</option>
+                    <option value="311">ΣΙΘΩΝΙΑΣ</option>
+                    <option value="312">ΚΑΝΤΑΝΟΥ - ΣΕΛΙΝΟΥ</option>
+                    <option value="313">ΨΑΡΩΝ</option>
+                    <option value="314">ΟΙΝΟΥΣΣΩΝ</option>
+                    <option value="315">ΑΓΚΙΣΤΡΙΟΥ</option>
+                    <option value="316">ΥΔΡΑΣ</option>
+                    <option value="317">ΣΠΕΤΣΩΝ</option>
+                    <option value="318">ΝΙΣΥΡΟΥ</option>
+                    <option value="319">ΘΑΣΟΥ</option>
+                    <option value="320">ΠΑΞΩΝ</option>
+                    <option value="321">ΑΛΟΝΝΗΣΟΥ</option>
+                    <option value="322">ΕΛΑΦΟΝΗΣΟΥ</option>
+                    <option value="323">ΣΚΙΑΘΟΥ</option>
+                    <option value="324">ΤΗΛΟΥ</option>
+                    <option value="325">ΓΑΥΔΟΥ</option>
+                    <option value="326">ΗΡΑΚΛΕΙΟ ΑΤΤΙΚΗΣ</option>
+                    <option value="327">ΑΡΓΟΥΣ ΟΡΕΣΤΙΚΟΥ</option>
+                    <option value="328">ΗΓΟΥΜΕΝΙΤΣΑΣ</option>
+                    <option value="329">ΤΡΟΙΖΗΝΙΑΣ-ΜΕΘΑΝΩΝ</option>
+                    <option value="330">ΑΛΙΑΡΤΟΥ-ΘΕΣΠΙΕΩΝ</option>
+                    <option value="331">ΛΟΥΤΡΑΚΙΟΥ-ΠΕΡΑΧΩΡΑΣ-ΑΓΙΩΝ ΘΕΟΔΩΡΩΝ</option>
+                    <option value="332">ΡΗΓΑ ΦΕΡΑΙΟΥ</option>
+                </select>
+                </label>
+                </div>
+              </div>
+                <div class="row">
+                <div class="col-xs-12 col-md-12">
+                  <label for="edu_admin">
+                    Διεύθυνση Εκπαίδευσης
+                    <select id="edu_admin" class="js-example-basic-multiple js-states form-control" name="edu_admins[]" multiple="multiple">
+                      <option value="1">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΑΙΤΩΛΟΑΚΑΡΝΑΝΙΑΣ</option>
+                      <option value="3">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΑΡΓΟΛΙΔΑΣ</option>
+                      <option value="7">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΑΝΑΤΟΛΙΚΗΣ ΑΤΤΙΚΗΣ</option>
+                      <option value="9">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΠΕΙΡΑΙΑ</option>
+                      <option value="10">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΑΧΑΙΑΣ</option>
+                      <option value="11">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΔΩΔΕΚΑΝΗΣΟΥ</option>
+                      <option value="12">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΔΩΔΕΚΑΝΗΣΟΥ</option>
+                      <option value="13">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΕΥΒΟΙΑΣ</option>
+                      <option value="15">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΗΡΑΚΛΕΙΟΥ</option>
+                      <option value="16">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΚΑΡΔΙΤΣΑΣ</option>
+                      <option value="18">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΚΥΚΛΑΔΩΝ</option>
+                      <option value="19">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΛΑΡΙΣΑΣ</option>
+                      <option value="20">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΛΕΣΒΟΥ</option>
+                      <option value="21">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΜΑΓΝΗΣΙΑΣ</option>
+                      <option value="22">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΠΙΕΡΙΑΣ</option>
+                      <option value="23">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΣΑΜΟΥ</option>
+                      <option value="24">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΣΕΡΡΩΝ</option>
+                      <option value="25">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΧΑΝΙΩΝ</option>
+                      <option value="26">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΧΙΟΥ</option>
+                      <option value="27">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΦΛΩΡΙΝΑΣ</option>
+                      <option value="29">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΚΙΛΚΙΣ</option>
+                      <option value="30">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΑΡΓΟΛΙΔΑΣ</option>
+                      <option value="31">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΑΡΚΑΔΙΑΣ</option>
+                      <option value="32">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΑΡΤΑΣ</option>
+                      <option value="36">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΑΧΑΙΑΣ</option>
+                      <option value="37">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΓΡΕΒΕΝΩΝ</option>
+                      <option value="38">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΔΡΑΜΑΣ</option>
+                      <option value="39">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΕΥΒΟΙΑΣ</option>
+                      <option value="40">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΗΜΑΘΙΑΣ</option>
+                      <option value="41">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΗΡΑΚΛΕΙΟΥ</option>
+                      <option value="42">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΘΕΣΠΡΩΤΙΑΣ</option>
+                      <option value="43">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΙΩΑΝΝΙΝΩΝ</option>
+                      <option value="44">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΚΑΒΑΛΑΣ</option>
+                      <option value="45">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΚΑΡΔΙΤΣΑΣ</option>
+                      <option value="46">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΚΕΡΚΥΡΑΣ</option>
+                      <option value="47">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΚΕΦΑΛΛΗΝΙΑΣ</option>
+                      <option value="48">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΚΟΖΑΝΗΣ</option>
+                      <option value="49">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΚΥΚΛΑΔΩΝ</option>
+                      <option value="50">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΛΑΚΩΝΙΑΣ</option>
+                      <option value="51">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΛΑΡΙΣΑΣ</option>
+                      <option value="52">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΛΕΣΒΟΥ</option>
+                      <option value="53">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΜΑΓΝΗΣΙΑΣ</option>
+                      <option value="54">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΜΕΣΣΗΝΙΑΣ</option>
+                      <option value="55">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΞΑΝΘΗΣ</option>
+                      <option value="56">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΠΕΛΛΑΣ</option>
+                      <option value="57">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΠΙΕΡΙΑΣ</option>
+                      <option value="58">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΤΡΙΚΑΛΩΝ</option>
+                      <option value="59">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΦΘΙΩΤΙΔΑΣ</option>
+                      <option value="60">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΧΑΝΙΩΝ</option>
+                      <option value="61">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΧΙΟΥ</option>
+                      <option value="62">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΑΝΑΤΟΛΙΚΗΣ ΑΤΤΙΚΗΣ</option>
+                      <option value="63">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΔΥΤΙΚΗΣ ΑΤΤΙΚΗΣ</option>
+                      <option value="64">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΠΕΙΡΑΙΑ</option>
+                      <option value="65">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΒΟΙΩΤΙΑΣ</option>
+                      <option value="66">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΗΛΕΙΑΣ</option>
+                      <option value="67">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΕΒΡΟΥ</option>
+                      <option value="68">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΡΟΔΟΠΗΣ</option>
+                      <option value="69">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΕΥΡΥΤΑΝΙΑΣ</option>
+                      <option value="70">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΖΑΚΥΝΘΟΥ</option>
+                      <option value="71">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΚΑΣΤΟΡΙΑΣ</option>
+                      <option value="72">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΛΑΣΙΘΙΟΥ</option>
+                      <option value="73">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΛΕΥΚΑΔΑΣ</option>
+                      <option value="74">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΠΡΕΒΕΖΑΣ</option>
+                      <option value="75">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΡΕΘΥΜΝΟΥ</option>
+                      <option value="76">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΣΑΜΟΥ</option>
+                      <option value="77">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΣΕΡΡΩΝ</option>
+                      <option value="78">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΦΩΚΙΔΑΣ</option>
+                      <option value="79">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΧΑΛΚΙΔΙΚΗΣ</option>
+                      <option value="80">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΤΡΙΚΑΛΩΝ</option>
+                      <option value="81">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΡΟΔΟΠΗΣ</option>
+                      <option value="82">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΚΕΡΚΥΡΑΣ</option>
+                      <option value="83">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΑΡΚΑΔΙΑΣ</option>
+                      <option value="84">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΑΡΤΑΣ</option>
+                      <option value="85">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΔΥΤΙΚΗΣ ΑΤΤΙΚΗΣ</option>
+                      <option value="86">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΒΟΙΩΤΙΑΣ</option>
+                      <option value="87">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΓΡΕΒΕΝΩΝ</option>
+                      <option value="88">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΔΡΑΜΑΣ</option>
+                      <option value="89">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΕΒΡΟΥ</option>
+                      <option value="90">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΗΛΕΙΑΣ</option>
+                      <option value="91">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΗΜΑΘΙΑΣ</option>
+                      <option value="92">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΘΕΣΠΡΩΤΙΑΣ</option>
+                      <option value="93">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΙΩΑΝΝΙΝΩΝ</option>
+                      <option value="94">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΚΟΖΑΝΗΣ</option>
+                      <option value="95">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΛΑΣΙΘΙΟΥ</option>
+                      <option value="96">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΛΕΥΚΑΔΑΣ</option>
+                      <option value="97">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΜΕΣΣΗΝΙΑΣ</option>
+                      <option value="98">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΠΕΛΛΑΣ</option>
+                      <option value="99">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΠΡΕΒΕΖΑΣ</option>
+                      <option value="100">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΡΕΘΥΜΝΟΥ</option>
+                      <option value="101">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΦΘΙΩΤΙΔΑΣ</option>
+                      <option value="102">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΧΑΛΚΙΔΙΚΗΣ</option>
+                      <option value="103">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΞΑΝΘΗΣ</option>
+                      <option value="104">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΛΑΚΩΝΙΑΣ</option>
+                      <option value="105">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΚΙΛΚΙΣ</option>
+                      <option value="106">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΦΛΩΡΙΝΑΣ</option>
+                      <option value="107">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΚΑΒΑΛΑΣ</option>
+                      <option value="112">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΚΑΣΤΟΡΙΑΣ</option>
+                      <option value="113">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΖΑΚΥΝΘΟΥ</option>
+                      <option value="114">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΕΥΡΥΤΑΝΙΑΣ</option>
+                      <option value="115">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΚΕΦΑΛΛΗΝΙΑΣ</option>
+                      <option value="116">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΦΩΚΙΔΑΣ</option>
+                      <option value="117">ΔΙΕΥΘΥΝΣΗ Π.Ε. Α΄ ΑΘΗΝΑΣ</option>
+                      <option value="118">ΔΙΕΥΘΥΝΣΗ Π.Ε. Δ΄ ΑΘΗΝΑΣ</option>
+                      <option value="119">ΔΙΕΥΘΥΝΣΗ Π.Ε. Β΄ ΑΘΗΝΑΣ</option>
+                      <option value="120">ΔΙΕΥΘΥΝΣΗ Π.Ε. Γ΄ ΑΘΗΝΑΣ</option>
+                      <option value="121">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΑΝΑΤ. ΘΕΣ/ΝΙΚΗΣ</option>
+                      <option value="122">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΔΥΤ. ΘΕΣ/ΝΙΚΗΣ</option>
+                      <option value="123">ΔΙΕΥΘΥΝΣΗ Π.Ε. ΚΟΡΙΝΘΙΑΣ</option>
+                      <option value="124">ΔΙΕΥΘΥΝΣΗ Δ.Ε. Δ΄ ΑΘΗΝΑΣ</option>
+                      <option value="126">ΔΙΕΥΘΥΝΣΗ Δ.Ε. Β΄ ΑΘΗΝΑΣ</option>
+                      <option value="127">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΚΟΡΙΝΘΙΑΣ</option>
+                      <option value="128">ΔΙΕΥΘΥΝΣΗ Δ.Ε. Γ΄ ΑΘΗΝΑΣ</option>
+                      <option value="129">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΑΙΤΩΛΟΑΚΑΡΝΑΝΙΑΣ</option>
+                      <option value="130">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΑΝΑΤ. ΘΕΣ/ΝΙΚΗΣ</option>
+                      <option value="131">ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΔΥΤ. ΘΕΣ/ΝΙΚΗΣ</option>
+                      <option value="132">ΔΙΕΥΘΥΝΣΗ ΘΡΗΣΚΕΥΤΙΚΗΣ ΕΚΠΑΙΔΕΥΣΗΣ</option>
+                      <option value="133">ΔΙΕΥΘΥΝΣΗ Δ.Ε. Α΄ ΑΘΗΝΑΣ</option>
+                      <option value="134">ΓΡΑΦΕΙΟ ΜΕΙΟΝΟΤΙΚΗΣ ΕΚΠΑΙΔΕΥΣΗΣ</option>
+                      <option value="154">ΣΙΒΙΤΑΝΙΔΕΙΟΣ</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+                <div class="row">
+                    <div class="col-xs-12 col-md-12">
+                        <label for="region_edu_admin">
+                            Περιφέρεια Εκπαίδευσης
+                            <select id="region_edu_admin" class="js-example-basic-multiple js-states form-control" name="region_edu_admins[]" multiple="multiple">
+                                <option value="29">ΓΕΝΙΚΗ ΓΡΑΜΜΑΤΕΙΑ ΘΡΗΣΚΕΥΜΑΤΩΝ</option>
+                                <option value="49">ΠΕΡΙΦΕΡΕΙΑΚΗ Δ/ΝΣΗ Α/ΘΜΙΑΣ ΚΑΙ Β/ΘΜΙΑΣ ΕΚΠ/ΣΗΣ ΑΝ. ΜΑΚΕΔΟΝΙΑΣ ΚΑΙ ΘΡΑΚΗΣ</option>
+                                <option value="46">ΠΕΡΙΦΕΡΕΙΑΚΗ Δ/ΝΣΗ Α/ΘΜΙΑΣ ΚΑΙ Β/ΘΜΙΑΣ ΕΚΠ/ΣΗΣ ΑΤΤΙΚΗΣ</option>
+                                <option value="55">ΠΕΡΙΦΕΡΕΙΑΚΗ Δ/ΝΣΗ Α/ΘΜΙΑΣ ΚΑΙ Β/ΘΜΙΑΣ ΕΚΠ/ΣΗΣ ΒΟΡΕΙΟΥ ΑΙΓΑΙΟΥ</option>
+                                <option value="43">ΠΕΡΙΦΕΡΕΙΑΚΗ Δ/ΝΣΗ Α/ΘΜΙΑΣ ΚΑΙ Β/ΘΜΙΑΣ ΕΚΠ/ΣΗΣ ΔΥΤΙΚΗΣ ΕΛΛΑΔΑΣ</option>
+                                <option value="48">ΠΕΡΙΦΕΡΕΙΑΚΗ Δ/ΝΣΗ Α/ΘΜΙΑΣ ΚΑΙ Β/ΘΜΙΑΣ ΕΚΠ/ΣΗΣ ΔΥΤΙΚΗΣ ΜΑΚΕΔΟΝΙΑΣ</option>
+                                <option value="45">ΠΕΡΙΦΕΡΕΙΑΚΗ Δ/ΝΣΗ Α/ΘΜΙΑΣ ΚΑΙ Β/ΘΜΙΑΣ ΕΚΠ/ΣΗΣ ΗΠΕΙΡΟΥ</option>
+                                <option value="54">ΠΕΡΙΦΕΡΕΙΑΚΗ Δ/ΝΣΗ Α/ΘΜΙΑΣ ΚΑΙ Β/ΘΜΙΑΣ ΕΚΠ/ΣΗΣ ΘΕΣΣΑΛΙΑΣ</option>
+                                <option value="52">ΠΕΡΙΦΕΡΕΙΑΚΗ Δ/ΝΣΗ Α/ΘΜΙΑΣ ΚΑΙ Β/ΘΜΙΑΣ ΕΚΠ/ΣΗΣ ΙΟΝΙΩΝ ΝΗΣΩΝ</option>
+                                <option value="51">ΠΕΡΙΦΕΡΕΙΑΚΗ Δ/ΝΣΗ Α/ΘΜΙΑΣ ΚΑΙ Β/ΘΜΙΑΣ ΕΚΠ/ΣΗΣ ΚΕΝΤΡΙΚΗΣ ΜΑΚΕΔΟΝΙΑΣ</option>
+                                <option value="53">ΠΕΡΙΦΕΡΕΙΑΚΗ Δ/ΝΣΗ Α/ΘΜΙΑΣ ΚΑΙ Β/ΘΜΙΑΣ ΕΚΠ/ΣΗΣ ΚΡΗΤΗΣ</option>
+                                <option value="50">ΠΕΡΙΦΕΡΕΙΑΚΗ Δ/ΝΣΗ Α/ΘΜΙΑΣ ΚΑΙ Β/ΘΜΙΑΣ ΕΚΠ/ΣΗΣ ΝΟΤΙΟΥ ΑΙΓΑΙΟΥ</option>
+                                <option value="44">ΠΕΡΙΦΕΡΕΙΑΚΗ Δ/ΝΣΗ Α/ΘΜΙΑΣ ΚΑΙ Β/ΘΜΙΑΣ ΕΚΠ/ΣΗΣ ΠΕΛΟΠΟΝΝΗΣΟΥ</option>
+                                <option value="47">ΠΕΡΙΦΕΡΕΙΑΚΗ Δ/ΝΣΗ Α/ΘΜΙΑΣ ΚΑΙ Β/ΘΜΙΑΣ ΕΚΠ/ΣΗΣ ΣΤΕΡΕΑΣ ΕΛΛΑΔΑΣ</option>
+                                <option value="36">ΠΕΡΙΦΕΡΕΙΑΚΗ ΔΙΕΥΘΥΝΣΗ Α/ΘΜΙΑΣ ΚΑΙ Β/ΘΜΙΑΣ ΕΚΠΑΙΔΕΥΣΗΣ ΑΝΑΤΟΛΙΚΗΣ ΜΑΚΕΔΟΝΙΑΣ ΚΑΙ ΘΡΑΚΗΣ</option>
+                                <option value="33">ΠΕΡΙΦΕΡΕΙΑΚΗ ΔΙΕΥΘΥΝΣΗ Α/ΘΜΙΑΣ ΚΑΙ Β/ΘΜΙΑΣ ΕΚΠΑΙΔΕΥΣΗΣ ΑΤΤΙΚΗΣ</option>
+                                <option value="42">ΠΕΡΙΦΕΡΕΙΑΚΗ ΔΙΕΥΘΥΝΣΗ Α/ΘΜΙΑΣ ΚΑΙ Β/ΘΜΙΑΣ ΕΚΠΑΙΔΕΥΣΗΣ ΒΟΡΕΙΟΥ ΑΙΓΑΙΟΥ</option>
+                                <option value="30">ΠΕΡΙΦΕΡΕΙΑΚΗ ΔΙΕΥΘΥΝΣΗ Α/ΘΜΙΑΣ ΚΑΙ Β/ΘΜΙΑΣ ΕΚΠΑΙΔΕΥΣΗΣ ΔΥΤΙΚΗΣ ΕΛΛΑΔΑΣ</option>
+                                <option value="35">ΠΕΡΙΦΕΡΕΙΑΚΗ ΔΙΕΥΘΥΝΣΗ Α/ΘΜΙΑΣ ΚΑΙ Β/ΘΜΙΑΣ ΕΚΠΑΙΔΕΥΣΗΣ ΔΥΤΙΚΗΣ ΜΑΚΕΔΟΝΙΑΣ</option>
+                                <option value="32">ΠΕΡΙΦΕΡΕΙΑΚΗ ΔΙΕΥΘΥΝΣΗ Α/ΘΜΙΑΣ ΚΑΙ Β/ΘΜΙΑΣ ΕΚΠΑΙΔΕΥΣΗΣ ΗΠΕΙΡΟΥ</option>
+                                <option value="41">ΠΕΡΙΦΕΡΕΙΑΚΗ ΔΙΕΥΘΥΝΣΗ Α/ΘΜΙΑΣ ΚΑΙ Β/ΘΜΙΑΣ ΕΚΠΑΙΔΕΥΣΗΣ ΘΕΣΣΑΛΙΑΣ</option>
+                                <option value="39">ΠΕΡΙΦΕΡΕΙΑΚΗ ΔΙΕΥΘΥΝΣΗ Α/ΘΜΙΑΣ ΚΑΙ Β/ΘΜΙΑΣ ΕΚΠΑΙΔΕΥΣΗΣ ΙΟΝΙΩΝ ΝΗΣΩΝ</option>
+                                <option value="38">ΠΕΡΙΦΕΡΕΙΑΚΗ ΔΙΕΥΘΥΝΣΗ Α/ΘΜΙΑΣ ΚΑΙ Β/ΘΜΙΑΣ ΕΚΠΑΙΔΕΥΣΗΣ ΚΕΝΤΡΙΚΗΣ ΜΑΚΕΔΟΝΙΑΣ</option>
+                                <option value="40">ΠΕΡΙΦΕΡΕΙΑΚΗ ΔΙΕΥΘΥΝΣΗ Α/ΘΜΙΑΣ ΚΑΙ Β/ΘΜΙΑΣ ΕΚΠΑΙΔΕΥΣΗΣ ΚΡΗΤΗΣ</option>
+                                <option value="37">ΠΕΡΙΦΕΡΕΙΑΚΗ ΔΙΕΥΘΥΝΣΗ Α/ΘΜΙΑΣ ΚΑΙ Β/ΘΜΙΑΣ ΕΚΠΑΙΔΕΥΣΗΣ ΝΟΤΙΟΥ ΑΙΓΑΙΟΥ</option>
+                                <option value="31">ΠΕΡΙΦΕΡΕΙΑΚΗ ΔΙΕΥΘΥΝΣΗ Α/ΘΜΙΑΣ ΚΑΙ Β/ΘΜΙΑΣ ΕΚΠΑΙΔΕΥΣΗΣ ΠΕΛΟΠΟΝΝΗΣΟΥ</option>
+                                <option value="34">ΠΕΡΙΦΕΡΕΙΑΚΗ ΔΙΕΥΘΥΝΣΗ Α/ΘΜΙΑΣ ΚΑΙ Β/ΘΜΙΑΣ ΕΚΠΑΙΔΕΥΣΗΣ ΣΤΕΡΕΑΣ ΕΛΛΑΔΑΣ</option>
+                                <option value="12">ΠΕΡΙΦΕΡΕΙΑΚΗ ΔΙΕΥΘΥΝΣΗ ΑΝΑΤΟΛΙΚΗΣ ΜΑΚΕΔΟΝΙΑΣ ΚΑΙ ΘΡΑΚΗΣ</option>
+                                <option value="3">ΠΕΡΙΦΕΡΕΙΑΚΗ ΔΙΕΥΘΥΝΣΗ ΑΤΤΙΚΗΣ</option>
+                                <option value="8">ΠΕΡΙΦΕΡΕΙΑΚΗ ΔΙΕΥΘΥΝΣΗ ΒΟΡΕΙΟΥ ΑΙΓΑΙΟΥ</option>
+                                <option value="1">ΠΕΡΙΦΕΡΕΙΑΚΗ ΔΙΕΥΘΥΝΣΗ ΔΥΤΙΚΗΣ ΕΛΛΑΔΑΣ</option>
+                                <option value="10">ΠΕΡΙΦΕΡΕΙΑΚΗ ΔΙΕΥΘΥΝΣΗ ΔΥΤΙΚΗΣ ΜΑΚΕΔΟΝΙΑΣ</option>
+                                <option value="11">ΠΕΡΙΦΕΡΕΙΑΚΗ ΔΙΕΥΘΥΝΣΗ ΗΠΕΙΡΟΥ</option>
+                                <option value="7">ΠΕΡΙΦΕΡΕΙΑΚΗ ΔΙΕΥΘΥΝΣΗ ΘΕΣΣΑΛΙΑΣ</option>
+                                <option value="13">ΠΕΡΙΦΕΡΕΙΑΚΗ ΔΙΕΥΘΥΝΣΗ ΙΟΝΙΩΝ ΝΗΣΩΝ</option>
+                                <option value="9">ΠΕΡΙΦΕΡΕΙΑΚΗ ΔΙΕΥΘΥΝΣΗ ΚΕΝΤΡΙΚΗΣ ΜΑΚΕΔΟΝΙΑΣ</option>
+                                <option value="6">ΠΕΡΙΦΕΡΕΙΑΚΗ ΔΙΕΥΘΥΝΣΗ ΚΡΗΤΗΣ</option>
+                                <option value="4">ΠΕΡΙΦΕΡΕΙΑΚΗ ΔΙΕΥΘΥΝΣΗ ΝΟΤΙΟΥ ΑΙΓΑΙΟΥ</option>
+                                <option value="2">ΠΕΡΙΦΕΡΕΙΑΚΗ ΔΙΕΥΘΥΝΣΗ ΠΕΛΟΠΟΝΝΗΣΟΥ</option>
+                                <option value="5">ΠΕΡΙΦΕΡΕΙΑΚΗ ΔΙΕΥΘΥΝΣΗ ΣΤΕΡΕΑΣ ΕΛΛΑΔΑΣ</option>
+                                <option value="28">ΣΙΒΙΤΑΝΙΔΕΙΟΣ ΔΗΜΟΣΙΑ ΣΧΟΛΗ ΤΕΧΝΩΝ ΚΑΙ ΕΠΑΓΓΕΛΜΑΤΩΝ</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                <div class="col-xs-12 col-md-12">
+                  <label for="unit_type">
+                    Τύπος Μονάδας
+                    <select id="unit_type" class="js-example-basic-multiple js-states form-control" name="unit_types[]" multiple="multiple">
+                      <option value="1">ΝΗΠΙΑΓΩΓΕΙΟ</option>
+                      <option value="2">ΔΗΜΟΤΙΚΟ</option>
+                      <option value="3">ΓΥΜΝΑΣΙΟ</option>
+                      <option value="4">ΓΕΝΙΚΟ ΛΥΚΕΙΟ</option>
+                      <option value="5">ΕΠΑΓΓΕΛΜΑΤΙΚΟ ΛΥΚΕΙΟ</option>
+                      <option value="6">ΕΠΑΓΓΕΛΜΑΤΙΚΗ ΣΧΟΛΗ</option>
+                      <option value="7">ΤΕΧΝΙΚΟ ΕΠΑΓΓΕΛΜΑΤΙΚΟ ΕΚΠΑΙΔΕΥΤΗΡΙΟ</option>
+                      <option value="8">ΕΡΓΑΣΤΗΡΙΑΚΟ ΚΕΝΤΡΟ</option>
+                      <option value="9">ΕΠΑΓΓΕΛΜΑΤΙΚΟ ΓΥΜΝΑΣΙΟ </option>
+                      <option value="10">ΓΕΝΙΚΟ ΑΡΧΕΙΟ ΚΡΑΤΟΥΣ</option>
+                      <option value="11">ΕΙΔΙΚΟ ΕΡΓΑΣΤΗΡΙΟ ΕΠΑΓΓΕΛΜΑΤΙΚΗΣ ΕΚΠΑΙΔΕΥΣΗΣ ΚΑΙ ΚΑΤΑΡΤΙΣΗΣ</option>
+                      <option value="12">ΣΧΟΛΙΚΗ ΕΠΙΤΡΟΠΗ ΠΡΩΤΟΒΑΘΜΙΑΣ</option>
+                      <option value="13">ΣΧΟΛΙΚΗ ΕΠΙΤΡΟΠΗ ΔΕΥΤΕΡΟΒΑΘΜΙΑΣ</option>
+                      <option value="14">ΔΙΕΥΘΥΝΣΗ ΔΕΥΤΕΡΟΒΑΘΜΙΑΣ ΕΚΠΑΙΔΕΥΣΗΣ</option>
+                      <option value="15">ΔΙΕΥΘΥΝΣΗ ΠΡΩΤΟΒΑΘΜΙΑΣ ΕΚΠΑΙΔΕΥΣΗΣ</option>
+                      <option value="16">ΠΕΡΙΦΕΡΕΙΑΚΗ ΔΙΕΥΘΥΝΣΗ ΕΚΠΑΙΔΕΥΣΗΣ</option>
+                      <option value="17">ΓΡΑΦΕΙΟ ΠΡΩΤΟΒΑΘΜΙΑΣ ΕΚΠΑΙΔΕΥΣΗΣ</option>
+                      <option value="18">ΓΡΑΦΕΙΟ ΔΕΥΤΕΡΟΒΑΘΜΙΑΣ ΕΚΠΑΙΔΕΥΣΗΣ</option>
+                      <option value="19">ΓΡΑΦΕΙΟ ΕΠΑΓΓΕΛΜΑΤΙΚΗΣ ΕΚΠΑΙΔΕΥΣΗΣ</option>
+                      <option value="20">ΚΕΣΥΠ</option>
+                      <option value="21">ΓΡΑΣΕΠ</option>
+                      <option value="22">ΣΣΝ</option>
+                      <option value="23">ΚΕΔΔΥ</option>
+                      <option value="24">ΚΕΠΛΗΝΕΤ</option>
+                      <option value="25">ΕΚΦΕ</option>
+                      <option value="26">ΚΠΕ</option>
+                      <option value="27">ΠΕΚ</option>
+                      <option value="28">ΣΕΠΕΗΥ</option>
+                      <option value="29">ΕΡΓΑΣΤΗΡΙΑ ΦΥΣΙΚΩΝ ΕΠΙΣΤΗΜΩΝ</option>
+                      <option value="30">ΣΧΟΛΙΚΕΣ ΒΙΒΛΙΟΘΗΚΕΣ</option>
+                      <option value="31">ΔΗΜΟΣΙΕΣ ΒΙΒΛΙΟΘΗΚΕΣ</option>
+                      <option value="32">ΚΟΜΒΟΣ ΠΣΔ</option>
+                      <option value="33">ΥΠΟΥΡΓΕΙΟ ΠΑΙΔΕΙΑΣ</option>
+                      <option value="34">ΦΟΡΕΑΣ ΕΞΩΤΕΡΙΚΟΥ</option>
+                      <option value="35">ΕΚΚΛΗΣΙΑΣΤΙΚΟ ΣΧΟΛΕΙΟ</option>
+                      <option value="36">ΙΝΣΤΙΤΟΥΤΟ ΕΠΑΓΓΕΛΜΑΤΙΚΗΣ ΚΑΤΑΡΤΙΣΗΣ</option>
+                      <option value="37">ΣΧΟΛΗ ΕΠΑΓΓΕΛΜΑΤΙΚΗΣ ΚΑΤΑΡΤΙΣΗΣ</option>
+                      <option value="38">ΣΧΟΛΕΙΟ ΔΕΥΤΕΡΗΣ ΕΥΚΑΙΡΙΑΣ</option>
+                      <option value="39">HELPDESK ΦΟΡΕΩΝ ΥΛΟΠΟΙΗΣΗΣ ΤΟΥ ΠΣΔ</option>
+                      <option value="40">ΟΜΟΣΠΟΝΔΙΑ</option>
+                      <option value="41">ΕΛΜΕ</option>
+                      <option value="42">ΜΟΝΑΔΕΣ ΑΛΛΩΝ ΥΠΟΥΡΓΕΙΩΝ</option>
+                      <option value="43">ΔΗΜΟΤΙΚΕΣ ΒΙΒΛΙΟΘΗΚΕΣ</option>
+                      <option value="44">ΕΝΙΑΙΟ ΕΙΔΙΚΟ ΕΠΑΓΓΕΛΜΑΤΙΚΟ ΓΥΜΝΑΣΙΟ-ΛΥΚΕΙΟ</option>
+                      <option value="45">ΕΚΚΛΗΣΙΑΣΤΙΚΟ</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-xs-6 col-md-6">
+                  <button id="apply-filters" type="button" class="btn btn-primary pull-right sort" data-sort="feature-name" id="sort-btn"><i class="fa fa-search"></i> Αναζήτηση</button>
+                </div>
+                <div class="col-xs-4 col-md-4 \">
+                  <button type="button" class="btn btn-primary" id="reset" value="Reset">Καθαρισμός</button>
+                </div>
+              </div>
+
+            </div>
+            <div class="sidebar-table">
+              <div id="units_info"></div>
+              <table class="table table-hover" id="feature-list">
+                <tbody class="list"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="map"></div>
+    </div>
+
+    <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button class="close" type="button" data-dismiss="modal" aria-hidden="true">&times;</button>
+          </div>
+          <div class="modal-body">
+            <ul class="nav nav-tabs nav-justified" id="aboutTabs">
+              <li class="active"><a href="#about" data-toggle="tab"><i class="fa fa-question-circle"></i>&nbsp;Σχετικά με το maps.sch.gr</a></li>
+            </ul>
+            <div class="tab-content" id="aboutTabsContent">
+              <div class="tab-pane fade active in" id="about">
+                <div class="well well-sm">
+                    <div class="well well-sm">
+                        <p>Ο Χάρτης Μονάδων ΠΣΔ (<a href="https://maps.sch.gr" target="_blank">ΠΣΔ Maps</a>) υλοποιήθηκε με χάρτη OpenStreetMap ο οποίος έχει <a href="https://www.openstreetmap.org/copyright" target="_blank">ελεύθερη</a> άδεια χρήσης. Περιέχει γεωγραφικά σημεία ενεργών Μονάδων ΠΣΔ, με τα βασικά τους στοιχεία.</p>
+                        <p> Τα δεδομένα τροφοδοτούνται μεσω REST web services από το Μητρώο Μονάδων (<a href="https://mm.sch.gr" target="_blank">MM</a>).</p>
+                    </div>
+                </div>
+                  <div class="panel panel-primary">
+                  <div class="panel-heading">Δυνατότητες</div>
+                  <ul class="list-group">
+                    <li class="list-group-item">Αναζήτηση Μονάδων με Όνομα Μονάδας (ελέυθερο κείμενο)</li>
+                    <li class="list-group-item">Αναζήτηση Μονάδων με Κωδικό ΜΜ ή Κωδικό Υπουργείου (ακριβής κωδικός)</li>
+                    <li class="list-group-item">Αναζήτηση Μονάδων με φίλτρα Δήμος, Διεύθυνση Εκπαίδευσης, Περιφέρεια Εκπαίδευσης και Τύπος Μονάδας (επιλογή από λίστα)</li>
+                    <li class="list-group-item">Συνδυασμός και δυνατότητα πολλαπλής επιλογής όλων των φίλτρων αναζήτησης</li>
+                    <li class="list-group-item">Προβολή καρτέλας με βασικές πληροφορίες της Μονάδας</li>
+                    <li class="list-group-item">Δυνατότητα προβολής Χάρτη με επιλεγμένα φίλτρα αναζήτησης και επίπεδο ζουμ (χρήση δεξιού κλίκ)</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Κλείσιμο</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div class="modal fade" id="legendModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          </div>
+          <div class="modal-body">
+                 <div class="well well-sm">
+                <p>Υποστηρίζεται από το <b>Πανεπιστήμιο Δυτικής Αττικής</b></p>
+                <p>Email: <b>mm@sch.gr</b></p>
+				<p>Αναφορά Προβλημάτων: <a href="https://helpdesk.sch.gr/?category_id=9508" target="_blank">https://helpdesk.sch.gr/</a></p>
+                </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Κλείσιμο</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div class="modal fade" id="featureModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button class="close" type="button" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title text-primary" id="feature-title"></h4>
+          </div>
+          <div class="modal-body" id="feature-info"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <script src="assets/libs/jquery/jquery-2.1.4.min.js"></script>
+    <script src="assets/libs/select2/select2-4.0.6-rc.0.min.js"></script>
+    <script src="assets/libs/bootstrap/bootstrap-3.3.5.min.js"></script>
+    <script src="assets/libs/leaflet/leaflet-1.6.0.min.js "></script>
+    <script src="assets/libs/leaflet-markercluster/leaflet.markercluster-1.4.1.min.js"></script>
+    <script src="assets/libs/lodash/lodash.min.js"></script>
+    <script src="assets/js/helper.js"></script>
+    <script src="assets/js/app.js"></script>
+  </body>
+</html>
